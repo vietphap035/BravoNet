@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DACS_1 (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "DACS_1 (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

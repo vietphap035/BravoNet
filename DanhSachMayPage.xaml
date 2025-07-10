@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DACS_1.DanhSachMayPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DACS_1"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:DACS_1.Model"
+    mc:Ignorable="d">
+
+    <Grid>
+        <GridView ItemsSource="{x:Bind Machines}" 
+                  IsItemClickEnabled="True"
+                  ItemClick="GridView_ItemClick"
+                  SelectionMode="None"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Margin="20"
+                  Height="800">
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="models:Machine">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="5" Margin="10,0,10,0" >
+                        <Image Source="{x:Bind ImagePath}" Width="175" Height="175" Margin="3"/>
+                    </StackPanel>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid Orientation="Vertical" MaximumRowsOrColumns="4"/>
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+        </GridView>
+    </Grid>
+
+</Page>
