@@ -42,7 +42,7 @@ namespace DACS_1
             ContentFrame.Navigate(typeof(DanhSachMayPage));
         }
 
-        public void DsNV_Click(object sender, RoutedEventArgs e)
+        public void DsKH_Click(object sender, RoutedEventArgs e)
         {
             ContentFrame.Navigate(typeof(DanhSachNguoiDungPage));
         }

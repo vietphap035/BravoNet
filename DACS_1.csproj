@@ -16,8 +16,11 @@
     <None Remove="Assets\ACTIVE.png" />
     <None Remove="Assets\icon.png" />
     <None Remove="Assets\NOT_ACTIVE.png" />
+    <None Remove="DanhSachHoaDon.xaml" />
     <None Remove="DanhSachMayPage.xaml" />
     <None Remove="DanhSachNguoiDungPage.xaml" />
+    <None Remove="DanhSachNhanVIen.xaml" />
+    <None Remove="DanhSachThucPham.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,6 +62,21 @@
     <Content Update="Assets\NOT_ACTIVE.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="DanhSachThucPham.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="DanhSachHoaDon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="DanhSachNhanVIen.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="DanhSachNguoiDungPage.xaml">
