@@ -62,8 +62,8 @@ namespace DACS_1
 
                         if (reader["existing_time"] != DBNull.Value)
                         {
-                            TimeSpan ts = (TimeSpan)reader["existing_time"];
-                            remainingTime = ts;
+                            int minutes = Convert.ToInt32(reader["existing_time"]);
+                            remainingTime = TimeSpan.FromMinutes(minutes);
                         }
                         else
                         {
@@ -152,9 +152,7 @@ namespace DACS_1
                         using var conn = DatabaseConnection.GetConnection();
                         conn.Open();
 
-                        var cmd = DatabaseConnection.CreateCommand(
-                            "UPDATE customer_time SET existing_time = ADDTIME(existing_time, SEC_TO_TIME(@themPhut * 60)) WHERE UId = @UId", conn);
-
+                        var cmd = DatabaseConnection.CreateCommand("UPDATE customer_time SET existing_time = existing_time + @themPhut WHERE UId = @UId", conn);
                         cmd.Parameters.AddWithValue("@themPhut", themPhut);
                         cmd.Parameters.AddWithValue("@UId", user.UId);
                         cmd.ExecuteNonQuery();
