@@ -18,6 +18,23 @@
                    ColumnWidth="*"
                     HeadersVisibility="Column"
                    IsReadOnly="True">
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="Fullname" Binding="{Binding FullName}" Width="2*" />
+                <controls:DataGridTextColumn Header="Basic Salary" Binding="{Binding basicSalary}" Width="1*" />
+                <controls:DataGridTextColumn Header="Bonus" Binding="{Binding bonus}" Width="1*" />
+                <controls:DataGridTextColumn Header="Working-time" Binding="{Binding workingHours}" Width="1.5*" />
+                <controls:DataGridTextColumn Header="Salary" Binding="{Binding salary}" Width="1*" />
+                <controls:DataGridTemplateColumn Header="Sửa" Width="Auto">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Sửa"
+                                Click="Edit_Btn"
+                                Tag="{Binding}"
+                                Padding="6,2"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+            </controls:DataGrid.Columns>
         </controls:DataGrid>
     </Grid>
 </Page>
