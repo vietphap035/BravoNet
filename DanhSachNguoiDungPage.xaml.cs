@@ -185,5 +185,126 @@ namespace DACS_1
             };
         }
 
+        public async void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Ô nhập tên người dùng
+            TextBox userNameBox = new()
+            {
+                PlaceholderText = "Nhập tên người dùng",
+                Width = 200
+            };
+            // Ô nhập mật khẩu
+            PasswordBox passwordBox = new()
+            {
+                PlaceholderText = "Nhập mật khẩu",
+                Width = 200
+            };
+            // Ô nhập vai trò
+            ComboBox roleComboBox = new()
+            {
+                Width = 200,
+                ItemsSource = new List<string> { "customer","staff" },
+                SelectedItem = "customer"
+            };
+            // 1. Thêm TextBox thời gian
+            TextBox timeBox = new()
+            {
+                PlaceholderText = "Nhập số tiền muốn nạp (VND)",
+                Width = 200,
+                Visibility = Visibility.Visible
+            };
+            
+            var layout = new StackPanel
+            {
+                Spacing = 10,
+                Children =
+                {
+                    CreateRow("Tên người dùng:", userNameBox),
+                    CreateRow("Mật khẩu:", passwordBox),
+                    CreateRow("Vai trò:", roleComboBox)
+                }
+            };
+            var timeRow = CreateRow("Nạp thêm:", timeBox);
+            layout.Children.Add(timeRow);
+
+            // 2. Xử lý khi thay đổi vai trò
+            roleComboBox.SelectionChanged += (s, e) =>
+            {
+                string selectedRole = roleComboBox.SelectedItem as string;
+                if (selectedRole == "customer")
+                {
+                    timeBox.Visibility = Visibility.Visible;
+                    timeRow.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    timeBox.Visibility = Visibility.Collapsed;
+                    timeRow.Visibility = Visibility.Collapsed;
+                }
+            };
+            ContentDialog dialog = new()
+            {
+                Title = "Thêm người dùng mới",
+                Content = layout,
+                PrimaryButtonText = "Xác nhận",
+                CloseButtonText = "Hủy",
+                XamlRoot = this.Content.XamlRoot
+            };
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                string userName = userNameBox.Text;
+                string password = passwordBox.Password;
+                string role = roleComboBox.SelectedItem as string;
+                int existingTime = 0;
+
+                if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(role))
+                {
+                    using var conn = DatabaseConnection.GetConnection();
+                    conn.Open();
+
+                    // Thêm account
+                    var cmd = DatabaseConnection.CreateCommand(
+                        "INSERT INTO accounts (username, pwd, roles) VALUES (@username, @pwd, @roles)", conn);
+                    cmd.Parameters.AddWithValue("@username", userName);
+                    cmd.Parameters.AddWithValue("@pwd", password);
+                    cmd.Parameters.AddWithValue("@roles", role);
+                    cmd.ExecuteNonQuery();
+
+                    // Lấy UID
+                    cmd = DatabaseConnection.CreateCommand("SELECT UId FROM accounts WHERE username = @username", conn);
+                    cmd.Parameters.AddWithValue("@username", userName);
+                    string userId = cmd.ExecuteScalar()?.ToString();
+
+                    // Nếu là customer thì thêm thời gian sử dụng
+                    if (role == "customer")
+                    {
+                        int.TryParse(timeBox.Text, out existingTime);
+                        int themPhut = existingTime / 1000;
+
+                        cmd = DatabaseConnection.CreateCommand(
+                            "INSERT INTO customer_time (UId, existing_time) VALUES (@UId, @existing_time)", conn);
+                        cmd.Parameters.AddWithValue("@UId", userId);
+                        cmd.Parameters.AddWithValue("@existing_time", themPhut);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    // Cập nhật danh sách
+                    MyDataList.Add(new UserModel
+                    {
+                        UserName = userName,
+                        Password = password,
+                        Role = role,
+                        RemainingTime = (role == "customer" ? (existingTime / 1000).ToString() : "0")
+                    });
+                }
+
+
+                // Cập nhật danh sách người dùng
+                MyDataList.Add(new UserModel { UserName = userName, Password = password, Role = role });
+                }
+            }
+
+        }
     }
-}
+
