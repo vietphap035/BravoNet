@@ -6,9 +6,44 @@
     xmlns:local="using:DACS_1"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d">
 
     <Grid>
-
+        <controls:DataGrid ItemsSource="{x:Bind MyDataList}" 
+           AutoGenerateColumns="False"
+           HorizontalAlignment="Stretch"
+           VerticalAlignment="Stretch"
+           ColumnWidth="*"
+            HeadersVisibility="Column"
+           IsReadOnly="True">
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="STT" Binding="{Binding P_Id}" Width="2*" />
+                <controls:DataGridTextColumn Header="Tên món ăn" Binding="{Binding P_Name}" Width="1*" />
+                <controls:DataGridTextColumn Header="Giá cả" Binding="{Binding P_Price}" Width="1*" />
+                <controls:DataGridTextColumn Header="Số lượng" Binding="{Binding P_Quantity}" Width="1.5*" />
+                <controls:DataGridTemplateColumn Header="Sửa" Width="Auto">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Sửa"
+                        Click="Edit_Btn"
+                        Tag="{Binding}"
+                        Padding="6,2"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+        <Button x:Name="AddButton"
+        Content="+"
+        Width="50"
+        Height="50"
+        FontSize="24"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Bottom"
+        Margin="0,0,0,10"
+        Click="AddButton_Click"
+        Style="{StaticResource AccentButtonStyle}"
+        CornerRadius="20"/>
     </Grid>
 </Page>

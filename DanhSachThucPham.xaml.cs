@@ -1,3 +1,6 @@
+using DACS_1.Database;
+using DACS_1.Model;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -7,6 +10,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -23,9 +27,185 @@ namespace DACS_1
     /// </summary>
     public sealed partial class DanhSachThucPham : Page
     {
+        public ObservableCollection<ProductModel> MyDataList { get; set; } = [];
         public DanhSachThucPham()
         {
             InitializeComponent();
+            MyDataList = new ObservableCollection<ProductModel>(LoadProductList());
+        }
+        public List<ProductModel> LoadProductList()
+        {
+            List<ProductModel> productList = [];
+            using (var conn = DatabaseConnection.GetConnection())
+            {
+                conn.Open();
+                var query = @"
+                SELECT *
+                FROM products;
+                ";
+                var cmd = DatabaseConnection.CreateCommand(query, conn);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int id = Convert.ToInt32(reader["product_id"]);
+                        string name = reader["name"].ToString();
+                        decimal price = Convert.ToDecimal(reader["price"]);
+                        int quantity = Convert.ToInt32(reader["quantity"]);
+                        ProductModel product = new ProductModel
+                        {
+                            P_Id = id,
+                            P_Name = name,
+                            P_Price = price,
+                            P_Quantity = quantity
+                        };
+                        productList.Add(product);
+                    }
+                }
+            }
+            return productList;
+        }
+
+        private async void Edit_Btn(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is ProductModel product)
+            {
+                TextBox giaCa = new()
+                {
+                    PlaceholderText = "Nhập số tiền bán (VND)",
+                    Width = 200,
+                    Text = product.P_Price.ToString()
+                };
+                TextBox soluong = new()
+                {
+                    PlaceholderText = "Nhập số lượng",
+                    Width = 200,
+                    Text = product.P_Quantity.ToString()
+                };
+                var layout = new StackPanel
+                {
+                    Spacing = 10,
+                    Children =
+                    {
+                        CreateRow("Tên món ăn:", new TextBlock { Text = product.P_Name, Width = 200 }),
+                        CreateRow("Giá cả:", giaCa),
+                        CreateRow("Số lượng đang bán:", soluong)
+                    }
+                };
+                ContentDialog dialog = new()
+                {
+                    Title = "Điều chỉnh món ăn",
+                    Content = layout,
+                    PrimaryButtonText = "Xác nhận",
+                    CloseButtonText = "Hủy",
+                    XamlRoot = btn.XamlRoot
+                };
+                var result = await dialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    // Lấy số tiền nhập vào
+                    decimal parsedGia = decimal.TryParse(giaCa.Text, out decimal GiaCa) ? GiaCa : product.P_Price;
+                    int parsedSoLuong = int.TryParse(soluong.Text, out int soLuong) ? soLuong : product.P_Quantity;
+
+                    if (parsedGia != product.P_Price || parsedSoLuong != product.P_Quantity)
+                    {
+                        using var conn = DatabaseConnection.GetConnection();
+                        conn.Open();
+
+                        var cmd = conn.CreateCommand();
+                        cmd.CommandText = @"
+                        UPDATE products 
+                        SET 
+                            price = @price, 
+                            quantity = @quantity 
+                        WHERE product_id = @product_id";
+
+                        cmd.Parameters.AddWithValue("@price", GiaCa);
+                        cmd.Parameters.AddWithValue("@quantity", soLuong);
+                        cmd.Parameters.AddWithValue("@product_id", product.P_Id);
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+        }
+        private async void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            TextBox tenMonAn = new()
+            {
+                PlaceholderText = "Nhập tên món ăn",
+                Width = 200
+            };
+            TextBox giaCa = new()
+            {
+                PlaceholderText = "Nhập giá bán (VND)",
+                Width = 200
+            };
+            TextBox soLuong = new()
+            {
+                PlaceholderText = "Nhập số lượng",
+                Width = 200
+            };
+            var layout = new StackPanel
+            {
+                Spacing = 10,
+                Children =
+                {
+                    CreateRow("Tên món ăn:", tenMonAn),
+                    CreateRow("Giá cả:", giaCa),
+                    CreateRow("Số lượng:", soLuong)
+                }
+            };
+            ContentDialog dialog = new()
+            {
+                Title = "Thêm món ăn mới",
+                Content = layout,
+                PrimaryButtonText = "Xác nhận",
+                CloseButtonText = "Hủy",
+                XamlRoot = this.XamlRoot
+            };
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                // Lấy số tiền nhập vào
+                string name = tenMonAn.Text;
+                decimal price = decimal.TryParse(giaCa.Text, out decimal GiaCa) ? GiaCa : 0;
+                int quantity = int.TryParse(soLuong.Text, out int soLuongValue) ? soLuongValue : 0;
+                if (!string.IsNullOrEmpty(name) && price > 0 && quantity >= 0)
+                {
+                    using var conn = DatabaseConnection.GetConnection();
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+                    cmd.CommandText = @"
+                    INSERT INTO products (name, price, quantity) 
+                    VALUES (@name, @price, @quantity)";
+                    cmd.Parameters.AddWithValue("@name", name);
+                    cmd.Parameters.AddWithValue("@price", price);
+                    cmd.Parameters.AddWithValue("@quantity", quantity);
+                    await cmd.ExecuteNonQueryAsync();
+                    // Cập nhật danh sách sản phẩm
+                    MyDataList.Add(new ProductModel { P_Name = name, P_Price = price, P_Quantity = quantity });
+                }
+            }
+        }
+        private static StackPanel CreateRow(string label, UIElement control)
+        {
+            return new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 10,
+                Children =
+        {
+            new TextBlock
+            {
+                Text = label,
+                Width = 150,
+                VerticalAlignment = VerticalAlignment.Center,
+                FontWeight = FontWeights.Bold
+            },
+            control
+        }
+            };
         }
     }
 }

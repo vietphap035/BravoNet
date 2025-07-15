@@ -44,24 +44,29 @@
 
             <!-- Nút chuyển trang -->
             <controls:WrapPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Grid Grid.Column="0">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Row="0" Orientation="Vertical" VerticalAlignment="Center" Margin="10,0,0,0">
-                        <Button Content="DS Máy" Click="DsMay_Click"/>
-                        <!--<Button Content="DsNV" Click="DsNV_Click"/>
-                            <Button Content="DSHD" Click="DsHD_Click"/>-->
-                    </StackPanel>
+                    <StackPanel Grid.Column="2" 
+            Orientation="Vertical" 
+            HorizontalAlignment="Right" 
+            VerticalAlignment="Center"
+            Spacing="10">
 
-                    <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center" Margin="10,0,0,0">
-                        <!--<Button Content="DSTP" Click="DsTP_Click"/> -->
-                        <Button Content="DSKH" Click="DsKH_Click"/>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Button Content="DS Máy" Click="DsMay_Click"/>
+                            <Button Content="DSKH" Click="DsKH_Click"/>
+                            <Button Content="DSHD" Click="DsHD_Click"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Button Content="DSTP" Click="DsTP_Click"/>
+                            <Button Content="DSNV" Click="DsNV_Click"/>
+                        </StackPanel>
+
                     </StackPanel>
                 </Grid>
             </controls:WrapPanel>

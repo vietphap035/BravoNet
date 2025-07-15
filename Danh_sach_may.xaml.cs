@@ -1,3 +1,4 @@
+using DACS_1.Database;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -36,6 +37,7 @@ namespace DACS_1
             InitializeComponent();
             var hwnd = WindowNative.GetWindowHandle(this);
             ShowWindow(hwnd, SW_MAXIMIZE);
+            this.Closed += MainWindow_Closed;
         }
         public void DsMay_Click(object sender, RoutedEventArgs e)
         {
@@ -45,6 +47,43 @@ namespace DACS_1
         public void DsKH_Click(object sender, RoutedEventArgs e)
         {
             ContentFrame.Navigate(typeof(DanhSachNguoiDungPage));
+        }
+
+        public void DsNV_Click(object sender, RoutedEventArgs e)
+        {
+            ContentFrame.Navigate(typeof(DanhSachNhanVIen));
+        }
+
+        public void DsTP_Click(object sender, RoutedEventArgs e)
+        {
+            ContentFrame.Navigate(typeof(DanhSachThucPham));
+        }
+
+        public void DsHD_Click(object sender, RoutedEventArgs e)
+        {
+            ContentFrame.Navigate(typeof(DanhSachHoaDon));
+        }
+        private void MainWindow_Closed(object sender, WindowEventArgs args)
+        {
+            SetCurrentUserOffline(App.CurrentUserId);
+        }
+
+        private void SetCurrentUserOffline(string uid)
+        {
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+
+            // Update is_online = 0
+            var cmd1 = DatabaseConnection.CreateCommand(
+                "UPDATE accounts SET is_online = 0 WHERE UId = @UId", conn);
+            cmd1.Parameters.AddWithValue("@UId", uid);
+            cmd1.ExecuteNonQuery();
+
+            // Reset last_login = NULL
+            var cmd2 = DatabaseConnection.CreateCommand(
+                "UPDATE accounts SET last_login = NULL WHERE UId = @UId", conn);
+            cmd2.Parameters.AddWithValue("@UId", uid);
+            cmd2.ExecuteNonQuery();
         }
     }
 }
