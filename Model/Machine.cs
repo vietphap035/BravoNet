@@ -11,5 +11,6 @@ namespace DACS_1.Model
         public string Id { get; set; }
         public string ImagePath { get; set; }
         public string UId { get; set; }
+        public int PcNumber { get; set; }
     }
 }

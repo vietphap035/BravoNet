@@ -19,7 +19,15 @@ namespace DACS_1.Model
         {
             get
             {
-                return basicSalary + bonus + (workingHours * 10000); // Assuming 10,000 VND per hour
+                if (workingHours != 0)
+                {
+                   return  bonus + (workingHours * 10000); // Assuming 10,000 VND per hour
+                }
+                else
+                {
+                    return 0;
+                }
+                
             }
         }
     }
