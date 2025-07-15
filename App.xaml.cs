@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -27,6 +28,9 @@ namespace DACS_1
     public partial class App : Application
     {
         private Window? _window;
+        public static string CurrentUserId { get; set; }    
+        public static DateTime currentLastLogin { get; set; }
+        public static DateTime currentLastLogout { get; set; }
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
