@@ -15,6 +15,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
 using WinRT;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -49,48 +50,66 @@ namespace DACS_1
                 try
                 {
                     con.Open();
-                    string query = "SELECT COUNT(*) FROM accounts WHERE username = @username AND pwd = @password";
+                    string query = "SELECT * FROM accounts WHERE username = @username AND pwd = @password";
 
                     using (var cmd = DatabaseConnection.CreateCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@username", username);
                         cmd.Parameters.AddWithValue("@password", password);
 
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
-                        if (count > 0)
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            // Dang nhap thanh cong
-                            ContentDialog successDialog = new ()
+                            if (reader.Read())
                             {
-                                Title = "Login Successful",
-                                Content = "Welcome to DACS1!",
-                                CloseButtonText = "OK",
-                                XamlRoot = this.Content.XamlRoot
-                            };
-                            await successDialog.ShowAsync();
-                            // Chuyen trang thai hoat dong
-                            string updateQuery = "UPDATE accounts SET is_online = TRUE WHERE username = @username";
-                            using (var updateCmd = DatabaseConnection.CreateCommand(updateQuery, con))
-                            {
-                                updateCmd.Parameters.AddWithValue("@username", username);
-                                updateCmd.ExecuteNonQuery();
+                                
+                                string userId = reader["UId"].ToString();
+
+                                
+                                ContentDialog successDialog = new()
+                                {
+                                    Title = "Login Successful",
+                                    Content = "Welcome to DACS1!",
+                                    CloseButtonText = "OK",
+                                    XamlRoot = this.Content.XamlRoot
+                                };
+                                await successDialog.ShowAsync();
+
+                                
+                                reader.Close(); 
+                                string updateQuery = "UPDATE accounts SET is_online = TRUE WHERE UId = @UId";
+                                using (var updateCmd = DatabaseConnection.CreateCommand(updateQuery, con))
+                                {
+                                    updateCmd.Parameters.AddWithValue("@UId", userId);
+                                    updateCmd.ExecuteNonQuery();
+                                }
+                                string updateLoginQuery = "UPDATE accounts SET last_login = @last_login WHERE UId = @UId";
+                                using (var updateCmd = DatabaseConnection.CreateCommand(updateLoginQuery, con))
+                                {
+                                    updateCmd.Parameters.AddWithValue("@last_login", DateTime.Now);
+                                    updateCmd.Parameters.AddWithValue("@UId", userId);
+                                    updateCmd.ExecuteNonQuery();
+                                }
+
+
+                                App.CurrentUserId = userId;
+
+                                
+                                var mainWindow = new MainWindow(username); 
+                                mainWindow.Activate();
+                                this.Close();
                             }
-                            // Chuyen den MainWindow
-                            var mainWindow = new MainWindow(username);
-                            mainWindow.Activate();
-                            this.Close();
-                        }
-                        else
-                        {
-                            // Dang nhap that bai
-                            ContentDialog errorDialog = new()
+                            else
                             {
-                                Title = "Login Failed",
-                                Content = "Invalid username or password.",
-                                CloseButtonText = "OK",
-                                XamlRoot = this.Content.XamlRoot
-                            };
-                            await errorDialog.ShowAsync();
+                                
+                                ContentDialog errorDialog = new()
+                                {
+                                    Title = "Login Failed",
+                                    Content = "Invalid username or password.",
+                                    CloseButtonText = "OK",
+                                    XamlRoot = this.Content.XamlRoot
+                                };
+                                await errorDialog.ShowAsync();
+                            }
                         }
                     }
                 }
