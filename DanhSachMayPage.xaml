@@ -9,6 +9,7 @@
     xmlns:models="using:DACS_1.Model"
     mc:Ignorable="d">
 
+    <!--Hiển thị 24 máy-->
     <Grid>
         <GridView ItemsSource="{x:Bind Machines}" 
                   IsItemClickEnabled="True"

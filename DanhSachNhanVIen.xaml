@@ -19,11 +19,11 @@
                     HeadersVisibility="Column"
                    IsReadOnly="True">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="Fullname" Binding="{Binding FullName}" Width="2*" />
-                <controls:DataGridTextColumn Header="Basic Salary" Binding="{Binding basicSalary}" Width="1*" />
-                <controls:DataGridTextColumn Header="Bonus" Binding="{Binding bonus}" Width="1*" />
-                <controls:DataGridTextColumn Header="Working-time" Binding="{Binding workingHours}" Width="1.5*" />
-                <controls:DataGridTextColumn Header="Salary" Binding="{Binding salary}" Width="1*" />
+                <controls:DataGridTextColumn Header="Tên đầy đủ" Binding="{Binding FullName}" Width="2*" />
+                <controls:DataGridTextColumn Header="Lương cơ bản" Binding="{Binding basicSalary}" Width="1*" />
+                <controls:DataGridTextColumn Header="Lương đầy đủ" Binding="{Binding bonus}" Width="1*" />
+                <controls:DataGridTextColumn Header="Thời gian làm" Binding="{Binding workingHours}" Width="1.5*" />
+                <controls:DataGridTextColumn Header="Tổng lương" Binding="{Binding salary}" Width="1*" />
                 <controls:DataGridTemplateColumn Header="Sửa" Width="Auto">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

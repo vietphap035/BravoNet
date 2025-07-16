@@ -88,6 +88,7 @@ namespace DACS_1
             return userList;
         }
 
+        // Phương thức để xử lý sự kiện khi người dùng nhấn nút "Xem"
         public async void Detail_Btn(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is UserModel clickedUser)
@@ -108,6 +109,7 @@ namespace DACS_1
                 await dialog.ShowAsync();
             }
         }
+        // Phương thức để xử lý sự kiện khi người dùng nhấn nút "Chỉnh sửa"
         private async void Edit_Btn(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is UserModel user)
@@ -155,11 +157,7 @@ namespace DACS_1
                         var cmd = DatabaseConnection.CreateCommand("UPDATE customer_time SET existing_time = existing_time + @themPhut WHERE UId = @UId", conn);
                         cmd.Parameters.AddWithValue("@themPhut", themPhut);
                         cmd.Parameters.AddWithValue("@UId", user.UId);
-                        cmd.ExecuteNonQuery();
-                        Debug.WriteLine($"Đã nạp {soTienNap} VND => {themPhut} phút");
-                        Debug.WriteLine($"Trước khi cộng: {user.RemainingTime}");
-                        user.RemainingTimeSpan = user.RemainingTimeSpan.Add(TimeSpan.FromMinutes(themPhut));
-                        Debug.WriteLine($"Sau khi cộng: {user.RemainingTime}");
+                        cmd.ExecuteNonQuery();                  
                     }
                 }
             }
@@ -185,6 +183,7 @@ namespace DACS_1
             };
         }
 
+        // Phương thức để xử lý sự kiện khi người dùng nhấn nút "Thêm"
         public async void AddButton_Click(object sender, RoutedEventArgs e)
         {
             // Ô nhập tên người dùng
@@ -213,7 +212,18 @@ namespace DACS_1
                 Width = 200,
                 Visibility = Visibility.Visible
             };
-            
+            TextBox nameBox = new()
+            {
+                PlaceholderText = "Nhập tên người dùng",
+                Width = 200,
+                Visibility = Visibility.Collapsed
+            };
+            TextBox salaryBox = new()
+            {
+                PlaceholderText = "Nhập lương (VND)",
+                Width = 200,
+                Visibility = Visibility.Collapsed
+            };
             var layout = new StackPanel
             {
                 Spacing = 10,
@@ -226,6 +236,10 @@ namespace DACS_1
             };
             var timeRow = CreateRow("Nạp thêm:", timeBox);
             layout.Children.Add(timeRow);
+            var nameRow = CreateRow("Tên nhân viên:", nameBox);
+            var salaryRow = CreateRow("Lương:", salaryBox);
+            layout.Children.Add(nameRow);
+            layout.Children.Add(salaryRow);
 
             // 2. Xử lý khi thay đổi vai trò
             roleComboBox.SelectionChanged += (s, e) =>
@@ -240,6 +254,10 @@ namespace DACS_1
                 {
                     timeBox.Visibility = Visibility.Collapsed;
                     timeRow.Visibility = Visibility.Collapsed;
+                    nameBox.Visibility = Visibility.Visible;
+                    nameRow.Visibility = Visibility.Visible;
+                    salaryBox.Visibility = Visibility.Visible;
+                    salaryRow.Visibility = Visibility.Visible;
                 }
             };
             ContentDialog dialog = new()
@@ -286,6 +304,17 @@ namespace DACS_1
                             "INSERT INTO customer_time (UId, existing_time) VALUES (@UId, @existing_time)", conn);
                         cmd.Parameters.AddWithValue("@UId", userId);
                         cmd.Parameters.AddWithValue("@existing_time", themPhut);
+                        cmd.ExecuteNonQuery();
+                    }
+                    else { 
+                        // Nếu là staff thì thêm tên và lương
+                        string staffName = nameBox.Text;
+                        int salary = 0;
+                        int.TryParse(salaryBox.Text, out salary);
+                        cmd = DatabaseConnection.CreateCommand(
+                            "INSERT INTO staff ( Full_name, basic_salary) VALUES ( @name, @salary)", conn);
+                        cmd.Parameters.AddWithValue("@name", staffName);
+                        cmd.Parameters.AddWithValue("@salary", salary);
                         cmd.ExecuteNonQuery();
                     }
 

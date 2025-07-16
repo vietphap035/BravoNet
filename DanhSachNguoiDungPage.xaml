@@ -9,6 +9,7 @@
         xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
         mc:Ignorable="d">
 
+        <!--Tạo bảng-->
         <Grid>
             <controls:DataGrid ItemsSource="{x:Bind MyDataList}" 
                                AutoGenerateColumns="False"
@@ -18,12 +19,14 @@
                                 HeadersVisibility="Column"
                                IsReadOnly="True">
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Header="UserName" Binding="{Binding UserName}" Width="2*" />
-                    <controls:DataGridTextColumn Header="Password" Binding="{Binding Password}" Width="1*" />
-                    <controls:DataGridTextColumn Header="Active" Binding="{Binding IsActived}" Width="1*" />
-                    <controls:DataGridTextColumn Header="RemainingTime" Binding="{Binding RemainingTime}" Width="1.5*" />
+                    <!--Tên của các cột, Binding theo model đã tạo-->
+                    <controls:DataGridTextColumn Header="Tên tài khoản" Binding="{Binding UserName}" Width="2*" />
+                    <controls:DataGridTextColumn Header="Mật khẩu" Binding="{Binding Password}" Width="1*" />
+                    <controls:DataGridTextColumn Header="Trạng thái hoạt động" Binding="{Binding IsActived}" Width="1*" />
+                    <controls:DataGridTextColumn Header="Thời gian còn lại" Binding="{Binding RemainingTime}" Width="1.5*" />
 
                     <controls:DataGridTemplateColumn Header="Thao tác" Width="Auto">
+                        <!--Tạo nút hành động-->
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Content="Xem"
