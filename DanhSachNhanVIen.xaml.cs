@@ -119,7 +119,7 @@ namespace DACS_1
 
                         var cmd = conn.CreateCommand();
                         cmd.CommandText = @"
-                        UPDATE staff 
+                        UPDATE staffs 
                         SET 
                             basic_salary = @basic_salary, 
                             bonus_salary = @bonus_salary 

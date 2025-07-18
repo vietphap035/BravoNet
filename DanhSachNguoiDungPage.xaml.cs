@@ -237,7 +237,9 @@ namespace DACS_1
             var timeRow = CreateRow("Nạp thêm:", timeBox);
             layout.Children.Add(timeRow);
             var nameRow = CreateRow("Tên nhân viên:", nameBox);
+            nameRow.Visibility = Visibility.Collapsed;
             var salaryRow = CreateRow("Lương:", salaryBox);
+            salaryRow.Visibility = Visibility.Collapsed;
             layout.Children.Add(nameRow);
             layout.Children.Add(salaryRow);
 
@@ -249,6 +251,10 @@ namespace DACS_1
                 {
                     timeBox.Visibility = Visibility.Visible;
                     timeRow.Visibility = Visibility.Visible;
+                    nameBox.Visibility = Visibility.Collapsed;
+                    nameRow.Visibility = Visibility.Collapsed;
+                    salaryBox.Visibility = Visibility.Collapsed;
+                    salaryRow.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
@@ -312,7 +318,8 @@ namespace DACS_1
                         int salary = 0;
                         int.TryParse(salaryBox.Text, out salary);
                         cmd = DatabaseConnection.CreateCommand(
-                            "INSERT INTO staff ( Full_name, basic_salary) VALUES ( @name, @salary)", conn);
+                            "INSERT INTO staffs (UId, Full_name, basic_salary) VALUES (@uid, @name, @salary)", conn);
+                        cmd.Parameters.AddWithValue("@UId", userId);
                         cmd.Parameters.AddWithValue("@name", staffName);
                         cmd.Parameters.AddWithValue("@salary", salary);
                         cmd.ExecuteNonQuery();
@@ -324,13 +331,9 @@ namespace DACS_1
                         UserName = userName,
                         Password = password,
                         Role = role,
-                        RemainingTime = (role == "customer" ? (existingTime / 1000).ToString() : "0")
+                        RemainingTime = (role == "customer" ? TimeSpan.FromSeconds(existingTime / 1000).ToString(@"hh\:mm\:ss") : "0")
                     });
                 }
-
-
-                // Cập nhật danh sách người dùng
-                MyDataList.Add(new UserModel { UserName = userName, Password = password, Role = role });
                 }
             }
 
