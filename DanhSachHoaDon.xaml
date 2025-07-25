@@ -6,9 +6,33 @@
     xmlns:local="using:DACS_1"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d">
 
     <Grid>
-
+        <controls:DataGrid ItemsSource="{x:Bind MyDataList}" 
+                   AutoGenerateColumns="False"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   ColumnWidth="*"
+                   HeadersVisibility="Column"
+                   IsReadOnly="True">
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding OrderId}" Width="2*" />
+                <controls:DataGridTextColumn Header="Tên người dùng" Binding="{Binding UserName}" Width="1*" />
+                <controls:DataGridTextColumn Header="Ngày đặt" Binding="{Binding OrderDate}" Width="1.5*" />
+                <controls:DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="1.5*" />
+                <controls:DataGridTemplateColumn Header="Chi tiết" Width="Auto">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Xem chi tiết"
+                                Click="Detail_Btn_Click"
+                                Tag="{Binding}"
+                                Padding="6,2"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
     </Grid>
 </Page>
