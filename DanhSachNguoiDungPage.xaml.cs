@@ -157,7 +157,13 @@ namespace DACS_1
                         var cmd = DatabaseConnection.CreateCommand("UPDATE customer_time SET existing_time = existing_time + @themPhut WHERE UId = @UId", conn);
                         cmd.Parameters.AddWithValue("@themPhut", themPhut);
                         cmd.Parameters.AddWithValue("@UId", user.UId);
-                        cmd.ExecuteNonQuery();                  
+                        cmd.ExecuteNonQuery();
+                        
+                        var cmd2 = DatabaseConnection.CreateCommand("Insert into nap_tien(UId,so_tien,thoi_gian_nap) value (@UId,@so_tien,@thoigian)", conn);
+                        cmd2.Parameters.AddWithValue("@UId", user.UId);
+                        cmd2.Parameters.AddWithValue("@so_tien", soTienNap);
+                        cmd2.Parameters.AddWithValue("@thoigian", DateTime.Now);
+                        cmd2.ExecuteNonQuery();
                     }
                 }
             }
@@ -311,6 +317,12 @@ namespace DACS_1
                         cmd.Parameters.AddWithValue("@UId", userId);
                         cmd.Parameters.AddWithValue("@existing_time", themPhut);
                         cmd.ExecuteNonQuery();
+
+                        var cmd2 = DatabaseConnection.CreateCommand("Insert into nap_tien(UId,so_tien,thoi_gian_nap) value (@UId,@so_tien,@thoigian)", conn);
+                        cmd2.Parameters.AddWithValue("@UId", userId);
+                        cmd2.Parameters.AddWithValue("@so_tien", existingTime);
+                        cmd2.Parameters.AddWithValue("@thoigian", DateTime.Now);
+                        cmd2.ExecuteNonQuery();
                     }
                     else { 
                         // Nếu là staff thì thêm tên và lương
