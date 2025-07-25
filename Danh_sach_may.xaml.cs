@@ -66,6 +66,10 @@ namespace DACS_1
         {
             ContentFrame.Navigate(typeof(DanhSachHoaDon));
         }
+        public void Thongke_Click(object sender, RoutedEventArgs e)
+        {
+            ContentFrame.Navigate(typeof(Thongkepage));
+        }
 
         // Xử lý sự kiện khi cửa sổ chính đóng
         private void MainWindow_Closed(object sender, WindowEventArgs args)

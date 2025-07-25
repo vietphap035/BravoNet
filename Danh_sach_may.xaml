@@ -57,14 +57,15 @@
             Spacing="10">
 
                         <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Button Content="Thống kê" Click="Thongke_Click"/>
                             <Button Content="DS Máy" Click="DsMay_Click"/>
-                            <Button Content="DSKH" Click="DsKH_Click"/>
-                            <Button Content="DSHD" Click="DsHD_Click"/>
+                            <Button Content="DSNV" Click="DsNV_Click"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <Button Content="DSTP" Click="DsTP_Click"/>
-                            <Button Content="DSNV" Click="DsNV_Click"/>
+                            <Button Content="DSKH" Click="DsKH_Click"/>
+                            <Button Content="DSHD" Click="DsHD_Click"/>
                         </StackPanel>
 
                     </StackPanel>
