@@ -27,6 +27,7 @@ namespace DACS_1
     /// </summary>
     public sealed partial class Thongkepage : Page
     {
+        // khai báo các series và labels cho biểu đồ
         public ISeries[] NapTienSeries { get; set; }
         public string[] NapTienLabels { get; set; }
 
@@ -57,8 +58,10 @@ namespace DACS_1
             this.DataContext = this;
         }
 
+        // Hàm này sẽ được gọi khi trang được khởi tạo
         public async void LoadThongKe()
         {
+            // Khởi tạo các danh sách để lưu trữ dữ liệu
             List<string> labels = new();
             List<double> tongNapList = new();
             List<double> tongHoaDonList = new();

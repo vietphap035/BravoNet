@@ -38,6 +38,7 @@ namespace DACS_1
             MyDataList = new ObservableCollection<UserModel>(LoadUserList());
         }
 
+        // Phương thức để tải danh sách người dùng từ cơ sở dữ liệu
         private List<UserModel> LoadUserList()
         {
             List<UserModel> userList = [];
@@ -57,6 +58,7 @@ namespace DACS_1
                 {
                     while (reader.Read())
                     {
+                        // Lấy thông tin người dùng từ cơ sở dữ liệu
                         string uid = reader["UId"].ToString();
                         TimeSpan remainingTime = TimeSpan.Zero;
 
@@ -79,7 +81,7 @@ namespace DACS_1
                             IsActived = reader.GetBoolean(reader.GetOrdinal("is_online")),
                             RemainingTime = remainingTime.ToString(@"hh\:mm\:ss")
                         };
-
+                        // Thêm người dùng vào danh sách
                         userList.Add(user);
                     }
                 }
@@ -121,6 +123,7 @@ namespace DACS_1
                     Width = 200
                 };
 
+                // Hiển thị thông tin người dùng
                 var layout = new StackPanel
                 {
                     Spacing = 10,
@@ -154,11 +157,13 @@ namespace DACS_1
                         using var conn = DatabaseConnection.GetConnection();
                         conn.Open();
 
+                        // Cập nhật thời gian sử dụng của người dùng
                         var cmd = DatabaseConnection.CreateCommand("UPDATE customer_time SET existing_time = existing_time + @themPhut WHERE UId = @UId", conn);
                         cmd.Parameters.AddWithValue("@themPhut", themPhut);
                         cmd.Parameters.AddWithValue("@UId", user.UId);
                         cmd.ExecuteNonQuery();
-                        
+
+                        // Cập nhật danh sách nạp tiền
                         var cmd2 = DatabaseConnection.CreateCommand("Insert into nap_tien(UId,so_tien,thoi_gian_nap) value (@UId,@so_tien,@thoigian)", conn);
                         cmd2.Parameters.AddWithValue("@UId", user.UId);
                         cmd2.Parameters.AddWithValue("@so_tien", soTienNap);
@@ -240,6 +245,7 @@ namespace DACS_1
                     CreateRow("Vai trò:", roleComboBox)
                 }
             };
+            // Thêm các ô nhập vào layout
             var timeRow = CreateRow("Nạp thêm:", timeBox);
             layout.Children.Add(timeRow);
             var nameRow = CreateRow("Tên nhân viên:", nameBox);
@@ -255,6 +261,7 @@ namespace DACS_1
                 string selectedRole = roleComboBox.SelectedItem as string;
                 if (selectedRole == "customer")
                 {
+                    // Hiển thị ô nhập thời gian và ẩn ô nhập tên và lương
                     timeBox.Visibility = Visibility.Visible;
                     timeRow.Visibility = Visibility.Visible;
                     nameBox.Visibility = Visibility.Collapsed;
@@ -264,6 +271,7 @@ namespace DACS_1
                 }
                 else
                 {
+                    // Ẩn ô nhập thời gian và hiển thị ô nhập tên và lương
                     timeBox.Visibility = Visibility.Collapsed;
                     timeRow.Visibility = Visibility.Collapsed;
                     nameBox.Visibility = Visibility.Visible;
@@ -312,12 +320,14 @@ namespace DACS_1
                         int.TryParse(timeBox.Text, out existingTime);
                         int themPhut = existingTime / 1000;
 
+                        // Thêm thời gian sử dụng vào bảng customer_time
                         cmd = DatabaseConnection.CreateCommand(
                             "INSERT INTO customer_time (UId, existing_time) VALUES (@UId, @existing_time)", conn);
                         cmd.Parameters.AddWithValue("@UId", userId);
                         cmd.Parameters.AddWithValue("@existing_time", themPhut);
                         cmd.ExecuteNonQuery();
 
+                        // Cập nhật bảng nap_tien
                         var cmd2 = DatabaseConnection.CreateCommand("Insert into nap_tien(UId,so_tien,thoi_gian_nap) value (@UId,@so_tien,@thoigian)", conn);
                         cmd2.Parameters.AddWithValue("@UId", userId);
                         cmd2.Parameters.AddWithValue("@so_tien", existingTime);

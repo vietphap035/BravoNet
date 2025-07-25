@@ -35,6 +35,8 @@ namespace DACS_1
 
             MyDataList = new ObservableCollection<OrderModel>(LoadOrderList());
         }
+
+        // Hàm này sẽ được gọi khi trang được tải
         private List<OrderModel> LoadOrderList()
         {
             List<OrderModel> orders = new();
@@ -73,6 +75,7 @@ namespace DACS_1
                 using (var conn = DatabaseConnection.GetConnection())
                 {
                     conn.Open();
+                    // Truy vấn để lấy tên người dùng dựa trên UId
                     var query = "SELECT username FROM accounts WHERE UId = @UId";
                     var cmd = DatabaseConnection.CreateCommand(query, conn);
                     cmd.Parameters.AddWithValue("@UId", order.UId);
@@ -122,6 +125,7 @@ namespace DACS_1
 
                             var items = GetItemOrder(order.OrderId);
 
+                            // Tạo các hàng cho từng món ăn
                             foreach (var item in items)
                             {
                                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -139,7 +143,7 @@ namespace DACS_1
                             reader.Close();
                             ContentDialog dialog = new()
                             {
-                                Title = "Thêm món ăn mới",
+                                Title = "Thông tin đơn hàng",
                                 Content = layout,
                                 PrimaryButtonText = "Xác nhận",
                                 XamlRoot = this.XamlRoot
@@ -171,6 +175,7 @@ namespace DACS_1
             }
         }
 
+        // Lấy danh sách các món ăn trong đơn hàng
         private List<ItemOrder> GetItemOrder(string o_id)
         {
             List<ItemOrder> itemOrders = [];
