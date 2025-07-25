@@ -14,6 +14,7 @@ namespace DACS_1.Model
             // Nên dùng DateTime để lưu ngày giờ
             public DateTime OrderDate { get; set; }
 
+            public string UserName { get; set; }
             public bool Status { get; set; }
         }
 
