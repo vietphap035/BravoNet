@@ -59,7 +59,7 @@ namespace DACS_1
 
         public void DsTP_Click(object sender, RoutedEventArgs e)
         {
-            ContentFrame.Navigate(typeof(DanhSachThucPham));
+            ContentFrame.Navigate(typeof(DanhSachThucPham), this);
         }
 
         public void DsHD_Click(object sender, RoutedEventArgs e)

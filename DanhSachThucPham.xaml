@@ -26,9 +26,9 @@
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Sửa"
-                        Click="Edit_Btn"
-                        Tag="{Binding}"
-                        Padding="6,2"/>
+                            Click="Edit_Btn"
+                            Tag="{Binding}"
+                            Padding="6,2"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>

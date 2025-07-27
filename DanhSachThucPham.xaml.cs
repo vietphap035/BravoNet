@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
@@ -27,12 +28,14 @@ namespace DACS_1
     /// </summary>
     public sealed partial class DanhSachThucPham : Page
     {
+        private Window _mainWindow;
         public ObservableCollection<ProductModel> MyDataList { get; set; } = [];
         public DanhSachThucPham()
         {
             InitializeComponent();
             MyDataList = new ObservableCollection<ProductModel>(LoadProductList());
         }
+
         public List<ProductModel> LoadProductList()
         {
             List<ProductModel> productList = [];
@@ -146,6 +149,25 @@ namespace DACS_1
                 PlaceholderText = "Nhập số lượng",
                 Width = 200
             };
+            // Nút chọn ảnh
+            Button chonAnhBtn = new()
+            {
+                Content = "Chọn ảnh",
+                Width = 100
+            };
+            Image previewAnh = new()
+            {
+                Width = 100,
+                Height = 100,
+                Stretch = Stretch.UniformToFill
+            };
+            // StackPanel chứa nút chọn ảnh + preview
+            StackPanel anhPanel = new()
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 10,
+                Children = { chonAnhBtn, previewAnh }
+            };
             var layout = new StackPanel
             {
                 Spacing = 10,
@@ -153,9 +175,40 @@ namespace DACS_1
                 {
                     CreateRow("Tên món ăn:", tenMonAn),
                     CreateRow("Giá cả:", giaCa),
-                    CreateRow("Số lượng:", soLuong)
+                    CreateRow("Số lượng:", soLuong),
+                    CreateRow("Ảnh món:", anhPanel)
                 }
             };
+            string selectedImagePath = "";
+
+            chonAnhBtn.Click += async (s, e) =>
+            {
+                var picker = new Windows.Storage.Pickers.FileOpenPicker();
+                picker.FileTypeFilter.Add(".png");
+                picker.FileTypeFilter.Add(".jpg");
+
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(_mainWindow);
+                WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+
+                var file = await picker.PickSingleFileAsync();
+                if (file != null)
+                {
+                    // Tạo folder "Images" trong LocalFolder
+                    var imagesFolder = await Windows.Storage.ApplicationData.Current.LocalFolder
+                                        .CreateFolderAsync("Images", Windows.Storage.CreationCollisionOption.OpenIfExists);
+
+                    // Copy file vào folder Images
+                    await file.CopyAsync(imagesFolder, file.Name, Windows.Storage.NameCollisionOption.ReplaceExisting);
+
+                    // Lưu đường dẫn truy cập ảnh
+                    selectedImagePath = $"ms-appdata:///local/Images/{file.Name}";
+
+                    // Hiển thị preview
+                    previewAnh.Source = new BitmapImage(new Uri(selectedImagePath));
+                }
+            };
+
             ContentDialog dialog = new()
             {
                 Title = "Thêm món ăn mới",
@@ -177,11 +230,12 @@ namespace DACS_1
                     conn.Open();
                     var cmd = conn.CreateCommand();
                     cmd.CommandText = @"
-                    INSERT INTO products (name, price, quantity) 
-                    VALUES (@name, @price, @quantity)";
+                    INSERT INTO products (name, price, quantity, imgPath) 
+                    VALUES (@name, @price, @quantity, @imgPath)";
                     cmd.Parameters.AddWithValue("@name", name);
                     cmd.Parameters.AddWithValue("@price", price);
                     cmd.Parameters.AddWithValue("@quantity", quantity);
+                    cmd.Parameters.AddWithValue("@imgPath", selectedImagePath);
                     await cmd.ExecuteNonQueryAsync();
                     // Cập nhật danh sách sản phẩm
                     MyDataList.Add(new ProductModel { P_Name = name, P_Price = price, P_Quantity = quantity });
@@ -207,5 +261,18 @@ namespace DACS_1
         }
             };
         }
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            if (e.Parameter is Window window)
+            {
+                _mainWindow = window;
+            }
+            else
+            {
+                throw new InvalidOperationException("Không nhận được Window từ Home.");
+            }
+        }
+
     }
 }
