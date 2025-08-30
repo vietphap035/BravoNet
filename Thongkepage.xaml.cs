@@ -1,6 +1,7 @@
 using DACS_1.Database;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -8,6 +9,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -111,7 +113,8 @@ namespace DACS_1
         new ColumnSeries<double>
         {
             Values = tongNapList,
-            Name = "Nạp tiền"
+            Name = "Nạp tiền",
+            Fill = new SolidColorPaint(SKColors.Green),
         }
             };
 

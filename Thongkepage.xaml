@@ -9,21 +9,31 @@
     xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
     mc:Ignorable="d">
 
-    <Grid RowDefinitions="*, *">
-        <lvc:CartesianChart
+    <Grid RowDefinitions="Auto,*,Auto,*">
+        <TextBlock Text="Biểu đồ Nạp Tiền"
+               FontSize="20"
+               FontWeight="Bold"
+               Margin="10"
+               Grid.Row="0"/>
+        <lvc:CartesianChart Grid.Row="1"
         Series="{Binding NapTienSeries}"
         XAxes="{Binding NapTienLabelsAxis}"
         YAxes="{Binding ValueAxis}"
         
         Margin="10"/>
 
+        <TextBlock Text="Biểu đồ Hóa Đơn"
+               FontSize="20"
+               FontWeight="Bold"
+               Margin="10"
+               Grid.Row="2"/>
         <lvc:CartesianChart
         Series="{Binding HoaDonSeries}"
         XAxes="{Binding HoaDonLabelsAxis}"
         YAxes="{Binding ValueAxis}"
         
         Margin="10"
-        Grid.Row="1"/>
+        Grid.Row="3"/>
     </Grid>
 
 

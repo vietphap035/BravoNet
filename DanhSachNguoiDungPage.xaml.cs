@@ -148,6 +148,7 @@ namespace DACS_1
 
                 if (result == ContentDialogResult.Primary)
                 {
+
                     // Lấy số tiền nhập vào
                     if (int.TryParse(napThemBox.Text, out int soTienNap))
                     {

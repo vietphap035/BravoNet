@@ -1,4 +1,5 @@
 using DACS_1.Database;
+using LiveChartsCore.Drawing.Layouts;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -44,6 +45,23 @@ namespace DACS_1
             // khoi tao bien dang nhap
             string username = UsernameTextBox.Text;
             string password = PasswordTextBox.Password;
+            
+            if(sender is Button btn)
+            {
+                if (username == null || password == null)
+                {
+                    ContentDialog dialog = new()
+                    {
+                        Title = "Nạp thời gian sử dụng",
+                        Content = "khong duoc de trong",
+                        PrimaryButtonText = "Xác nhận",
+                        CloseButtonText = "Hủy",
+                        XamlRoot = btn.XamlRoot
+                    };
+                    return;
+                }
+            }
+            
             string packageFamilyName = Windows.ApplicationModel.Package.Current.Id.FamilyName;
             Debug.WriteLine($"PackageFamilyName: {packageFamilyName}");
 
