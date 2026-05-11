@@ -137,40 +137,55 @@ namespace DACS_1
             TextBox tenMonAn = new()
             {
                 PlaceholderText = "Nhập tên món ăn",
-                Width = 200
+                Width = 220,
+                Margin = new Thickness(0, 0, 0, 8)
             };
             TextBox giaCa = new()
             {
                 PlaceholderText = "Nhập giá bán (VND)",
-                Width = 200
+                Width = 220,
+                Margin = new Thickness(0, 0, 0, 8)
             };
             TextBox soLuong = new()
             {
                 PlaceholderText = "Nhập số lượng",
-                Width = 200
+                Width = 220,
+                Margin = new Thickness(0, 0, 0, 8)
             };
-            // Nút chọn ảnh
             Button chonAnhBtn = new()
             {
                 Content = "Chọn ảnh",
-                Width = 100
+                Width = 110,
+                Margin = new Thickness(0, 0, 0, 8)
             };
             Image previewAnh = new()
             {
-                Width = 100,
-                Height = 100,
-                Stretch = Stretch.UniformToFill
+                Width = 110,
+                Height = 110,
+                Stretch = Stretch.UniformToFill,
+                Margin = new Thickness(0)
             };
-            // StackPanel chứa nút chọn ảnh + preview
+            Border previewBorder = new()
+            {
+                CornerRadius = new CornerRadius(12),
+                BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 180, 180)),
+                BorderThickness = new Thickness(2),
+                Child = previewAnh,
+                Margin = new Thickness(0, 0, 0, 8),
+                Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 245, 245))
+            };
             StackPanel anhPanel = new()
             {
                 Orientation = Orientation.Horizontal,
-                Spacing = 10,
-                Children = { chonAnhBtn, previewAnh }
+                Spacing = 12,
+                Children = { chonAnhBtn, previewBorder },
+                Margin = new Thickness(0, 0, 0, 8)
             };
             var layout = new StackPanel
             {
-                Spacing = 10,
+                Spacing = 14,
+                Padding = new Thickness(18),
+                Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
                 Children =
                 {
                     CreateRow("Tên món ăn:", tenMonAn),
@@ -179,39 +194,30 @@ namespace DACS_1
                     CreateRow("Ảnh món:", anhPanel)
                 }
             };
-            string selectedImagePath = "";
-
+            var path = "";
             chonAnhBtn.Click += async (s, e) =>
             {
                 var picker = new Windows.Storage.Pickers.FileOpenPicker();
                 picker.FileTypeFilter.Add(".png");
                 picker.FileTypeFilter.Add(".jpg");
-
                 var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(_mainWindow);
                 WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
-
-
                 var file = await picker.PickSingleFileAsync();
                 if (file != null)
                 {
-                    // Tạo folder "Images" trong LocalFolder
-                    var imagesFolder = await Windows.Storage.ApplicationData.Current.LocalFolder
-                                        .CreateFolderAsync("Images", Windows.Storage.CreationCollisionOption.OpenIfExists);
-
-                    // Copy file vào folder Images
-                    await file.CopyAsync(imagesFolder, file.Name, Windows.Storage.NameCollisionOption.ReplaceExisting);
-
-                    // Lưu đường dẫn truy cập ảnh
-                    selectedImagePath = $"ms-appdata:///local/Images/{file.Name}";
-
-                    // Hiển thị preview
-                    previewAnh.Source = new BitmapImage(new Uri(selectedImagePath));
+                    path = file.Path;
+                    previewAnh.Source = new BitmapImage(new Uri(path));
                 }
             };
-
             ContentDialog dialog = new()
             {
-                Title = "Thêm món ăn mới",
+                Title = new TextBlock {
+                    Text = "Thêm món ăn mới",
+                    FontSize = 22,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 120, 215)),
+                    Margin = new Thickness(0, 0, 0, 10)
+                },
                 Content = layout,
                 PrimaryButtonText = "Xác nhận",
                 CloseButtonText = "Hủy",
@@ -220,7 +226,6 @@ namespace DACS_1
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                // Lấy số tiền nhập vào
                 string name = tenMonAn.Text;
                 decimal price = decimal.TryParse(giaCa.Text, out decimal GiaCa) ? GiaCa : 0;
                 int quantity = int.TryParse(soLuong.Text, out int soLuongValue) ? soLuongValue : 0;
@@ -235,9 +240,8 @@ namespace DACS_1
                     cmd.Parameters.AddWithValue("@name", name);
                     cmd.Parameters.AddWithValue("@price", price);
                     cmd.Parameters.AddWithValue("@quantity", quantity);
-                    cmd.Parameters.AddWithValue("@imgPath", selectedImagePath);
+                    cmd.Parameters.AddWithValue("@imgPath", path);
                     await cmd.ExecuteNonQueryAsync();
-                    // Cập nhật danh sách sản phẩm
                     MyDataList.Add(new ProductModel { P_Name = name, P_Price = price, P_Quantity = quantity });
                 }
             }
