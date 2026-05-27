@@ -20,5 +20,7 @@ namespace DACS_1.Database
         {
             return new MySqlCommand(query, connection);
         }
+
+
     }
 }
